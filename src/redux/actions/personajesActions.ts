@@ -1,8 +1,5 @@
 import { Action, ActionCreator, ThunkAction } from "@reduxjs/toolkit";
-import {
-  buscarPersonajesAPI,
-  cambiarPaginaApi,
-} from "../../services/personajeService";
+import { buscarPersonajesAPI, cambiarPaginaApi } from "../../services/personajeService";
 import { IRootState } from "../store";
 import Personaje from "../../types/characterType";
 import InfoPage from "../../types/infoPageType";
@@ -30,29 +27,24 @@ export interface AddFavorito extends Action {
   payload: Personaje;
 }
 
+export interface ChangeFavorito extends Action {
+  type: "CHANGE_FAVORITO";
+  payload: Personaje;
+}
+
 export interface RemoveFavorito extends Action {
   type: "REMOVE_FAVORITO";
   payload: Personaje;
 }
 
-export interface ChangeFavorito extends Action {
-  type: "CHANGE_FAVORITO";
-  payload: Personaje;
+export interface RemoveTodoFavoritosAction extends Action {
+  type: "REMOVE_TODO_FAVORITOS";
 }
 
 export interface getPersonajesAccion extends Action {
   type: "GET_PERSONAJES";
   payload: { busqueda: string };
 }
-
-export const isChangeFavorito: ActionCreator<ChangeFavorito> = (
-  personaje: Personaje
-) => {
-  return {
-    type: "CHANGE_FAVORITO",
-    payload: personaje,
-  };
-};
 
 export const isFetchingPersonajes: ActionCreator<IsFetchingPersonajes> = (
   name: string
@@ -93,14 +85,21 @@ export const isErrorPersonajes: ActionCreator<IsErrorPersonajes> = (
   };
 };
 
-export const getPersonajes: ActionCreator<getPersonajesAccion> = (
-  name: string
+export const isAddFavorito: ActionCreator<AddFavorito> = (
+  personaje: Personaje
 ) => {
   return {
-    type: "GET_PERSONAJES",
-    payload: {
-      busqueda: name,
-    },
+    type: "ADD_FAVORITO",
+    payload: personaje,
+  };
+};
+
+export const isChangeFavorito: ActionCreator<ChangeFavorito> = (
+  personaje: Personaje
+) => {
+  return {
+    type: "CHANGE_FAVORITO",
+    payload: personaje,
   };
 };
 
@@ -113,29 +112,35 @@ export const isRemoveFavorito: ActionCreator<RemoveFavorito> = (
   };
 };
 
-export const isAddFavorito: ActionCreator<AddFavorito> = (
-  personaje: Personaje
-) => {
-  return {
-    type: "ADD_FAVORITO",
-    payload: personaje,
-  };
-};
-
-export const removeTodoFavoritos: ActionCreator<
-  RemoveTodoFavoritosAction
-> = () => {
+export const removeTodoFavoritos: ActionCreator<RemoveTodoFavoritosAction> = () => {
   return {
     type: "REMOVE_TODO_FAVORITOS",
   };
 };
 
-export interface RemoveTodoFavoritosAction extends Action {
-  type: "REMOVE_TODO_FAVORITOS";
-}
+export const getPersonajes: ActionCreator<getPersonajesAccion> = (
+  name: string
+) => {
+  return {
+    type: "GET_PERSONAJES",
+    payload: {
+      busqueda: name,
+    },
+  };
+};
 
-export interface SearchCharactersThunks
-  extends ThunkAction<void, IRootState, unknown, PersonajesAction> {}
+export type PersonajesAction =
+  | ReturnType<typeof isFetchingPersonajes>
+  | ReturnType<typeof isSuccessPersonajes>
+  | ReturnType<typeof isErrorPersonajes>
+  | ReturnType<typeof isAddFavorito>
+  | ReturnType<typeof isChangeFavorito>
+  | ReturnType<typeof isRemoveFavorito>
+  | ReturnType<typeof removeTodoFavoritos>
+  | ReturnType<typeof getPersonajes>;
+
+  
+export interface SearchCharactersThunks extends ThunkAction<void, IRootState, unknown, PersonajesAction> {}
 
 export const searchCharactersThunks = (
   name: string
@@ -154,7 +159,9 @@ export const searchCharactersThunks = (
   };
 };
 
-export const changePageThunk = (url: string): SearchCharactersThunks => {
+export const changePageThunk = (
+  url: string
+  ): SearchCharactersThunks => {
   return async (dispatch, getState) => {
     try {
       const [personajes, info] = await cambiarPaginaApi(url);
@@ -164,13 +171,3 @@ export const changePageThunk = (url: string): SearchCharactersThunks => {
     }
   };
 };
-
-export type PersonajesAction =
-  | ReturnType<typeof isErrorPersonajes>
-  | ReturnType<typeof isFetchingPersonajes>
-  | ReturnType<typeof isSuccessPersonajes>
-  | ReturnType<typeof isAddFavorito>
-  | ReturnType<typeof isRemoveFavorito>
-  | ReturnType<typeof getPersonajes>
-  | ReturnType<typeof removeTodoFavoritos>
-  | ReturnType<typeof isChangeFavorito>;

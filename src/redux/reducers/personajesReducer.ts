@@ -34,11 +34,32 @@ const personajesReducer: Reducer<PersonajesState, PersonajesAction> = (
   action
 ): PersonajesState => {
   switch (action.type) {
-    case "CHANGE_FAVORITO":
+    case "IS_FETCHING_PERSONAJES":
       return {
         ...state,
-        personajes: [...state.personajes, action.payload],
+        busqueda: action.payload.name,
+        status: "fetching",
+        personajes: [],
+        error: null,
       };
+
+    case "IS_SUCCESS_PERSONAJES":
+      return {
+        ...state,
+        status: "success",
+        personajes: action.payload.personajes,
+        infoPage: action.payload.infoPage,
+        error: null,
+      };
+
+    case "IS_ERROR_PERSONAJES":
+      return {
+        ...state,
+        status: "error",
+        error: action.payload.error,
+        personajes: [],
+      };
+
     case "ADD_FAVORITO":
       return {
         ...state,
@@ -48,6 +69,13 @@ const personajesReducer: Reducer<PersonajesState, PersonajesAction> = (
         ],
         //[...state.favoritos, action.payload]
       };
+
+    case "CHANGE_FAVORITO":
+      return {
+        ...state,
+        personajes: [...state.personajes, action.payload],
+      };
+
     case "REMOVE_FAVORITO":
       return {
         ...state,
@@ -55,34 +83,13 @@ const personajesReducer: Reducer<PersonajesState, PersonajesAction> = (
           (personaje) => personaje.id !== action.payload.id
         ),
       };
-    case "IS_ERROR_PERSONAJES":
-      return {
-        ...state,
-        error: action.payload.error,
-        status: "error",
-        personajes: [],
-      };
-    case "IS_FETCHING_PERSONAJES":
-      return {
-        ...state,
-        busqueda: action.payload.name,
-        status: "fetching",
-        personajes: [],
-        error: null,
-      };
-    case "IS_SUCCESS_PERSONAJES":
-      return {
-        ...state,
-        status: "success",
-        personajes: action.payload.personajes,
-        infoPage: action.payload.infoPage,
-        error: null,
-      };
+
     case "REMOVE_TODO_FAVORITOS":
       return {
         ...state,
         favoritos: [],
       };
+      
     default:
       return { ...state };
   }

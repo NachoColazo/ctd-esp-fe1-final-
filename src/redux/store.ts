@@ -1,14 +1,8 @@
-import {
-  applyMiddleware,
-  combineReducers,
-  createStore,
-} from "@reduxjs/toolkit";
+import { combineReducers, applyMiddleware } from "@reduxjs/toolkit";
 import personajesReducer from "./reducers/personajesReducer";
+import { createStore } from "redux";
+import { TypedUseSelectorHook, useSelector as useReduxSelector } from "react-redux";
 import { composeWithDevTools } from "redux-devtools-extension";
-import {
-  TypedUseSelectorHook,
-  useSelector as useReduxSelector,
-} from "react-redux";
 import thunk from "redux-thunk";
 
 const rootReducer = combineReducers({
